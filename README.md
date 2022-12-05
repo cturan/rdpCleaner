@@ -6,7 +6,7 @@ This script allows you to remove Remote Desktop Protocol (RDP) entries from the 
 
 To use the script, run the following command:
 
-python rdp_entry_remover.py
+python rdpCleaner.py
 
 
 
