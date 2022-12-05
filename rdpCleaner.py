@@ -1,52 +1,46 @@
-"""
-Remove RDP entries from the registry
-"""
-
 import winreg
 
 
-def main():
-    while True:
-        server_list = []
-        reg_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Software\\Microsoft\\Terminal Server Client\\Default', 0,
-                                 winreg.KEY_ALL_ACCESS)
-        serv_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Software\\Microsoft\\Terminal Server Client\\Servers', 0,
-                                  winreg.KEY_ALL_ACCESS)
+def remove_rdp_entry(server_name: str):
+    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Software\\Microsoft\\Terminal Server Client\\Default', 0, winreg.KEY_ALL_ACCESS) as default_key:
+        winreg.DeleteValue(default_key, server_name)
 
+    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Software\\Microsoft\\Terminal Server Client\\Servers', 0, winreg.KEY_ALL_ACCESS) as servers_key:
+        try:
+            winreg.DeleteKey(servers_key, server_name)
+        except OSError:
+            pass
+
+
+def list_rdp_entries():
+    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Software\\Microsoft\\Terminal Server Client\\Default', 0, winreg.KEY_ALL_ACCESS) as default_key:
         try:
             i = 0
             while True:
-                server = winreg.EnumValue(reg_key, i)
-                server_list.append([server[0], server[1]])
+                server_name, server_ip, _ = winreg.EnumValue(default_key, i)
+                print('{}) {} ({})'.format(i, server_name, server_ip))
                 i += 1
         except OSError:
             pass
 
-        print('Found {} RDP entries'.format(len(server_list)))
-        print("Please select the RDP entry you want to remove:")
-        for i, server in enumerate(server_list):
-            print('{}) {}'.format(i, server[1]))
+
+def main():
+    while True:
+        list_rdp_entries()
 
         try:
-            selection = int(input('Selection: '))
-            if selection < 0 or selection > len(server_list):
-                print('Invalid selection')
-                continue
-            print('Removing {}'.format(server_list[selection][1])),
-            winreg.DeleteValue(reg_key, server_list[selection][0])
-            try:
-                if ":" in server_list[selection][1]:
-                    server_name = server_list[selection][1].split(":")[0]
-                else:
-                    server_name = server_list[selection][1]
-                winreg.DeleteKey(serv_key, server_name)
-            except OSError:
-                pass
+            selection = int(input('Select the RDP entry to remove (or enter -1 to exit): '))
+            if selection < 0:
+                break
+
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Software\\Microsoft\\Terminal Server Client\\Default', 0, winreg.KEY_ALL_ACCESS) as default_key:
+                server_name, _, _ = winreg.EnumValue(default_key, selection)
+
+            print('Removing {}...'.format(server_name))
+            remove_rdp_entry(server_name)
             print('...done')
-            print('____________________________________________________________')
-        except Exception as e:
-            print(e)
-            continue
+        except (ValueError, OSError) as e:
+            print('Error:', e)
 
 
 if __name__ == '__main__':
