@@ -1,9 +1,20 @@
-# rdpCleaner
-Remove entries in the Windows Remote Desktop Connection client
+# RDP Entry Remover
+
+This script allows you to remove Remote Desktop Protocol (RDP) entries from the registry of a computer running the Windows operating system.
+
+## Usage
+
+To use the script, run the following command:
+
+python rdp_entry_remover.py
 
 
-After you use the Remote Desktop Connection tool to connect to another computer, the name of the computer is added to the Remote Desktop Connection Computer box. It's easy for you to quickly select the same computer at a later time. However, the tool doesn't provide a way to clear the list of computers or remove one or more entries from the Computer box.
 
+The script will display a list of the RDP entries that it finds in the registry. You can then select the entry that you want to remove by entering the corresponding number. The script will then remove the selected entry from the registry.
 
-With this script you can simply remove RDP entries from your computer.
+You can repeat this process to remove multiple entries if desired. To exit the script, enter -1 when prompted to select an entry.
 
+## Requirements
+
+- Python 3
+- The `winreg` module (included with the standard library in Python 3)
