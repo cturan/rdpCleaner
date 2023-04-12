@@ -14,6 +14,13 @@ The script will display a list of the RDP entries that it finds in the registry.
 
 You can repeat this process to remove multiple entries if desired. To exit the script, enter -1 when prompted to select an entry.
 
+
+## GUI
+
+![screen](https://user-images.githubusercontent.com/388283/231329289-a93997a4-153b-4c3c-bb06-a44c60f89905.png)
+
+
+
 ## Requirements
 
 - Python 3
